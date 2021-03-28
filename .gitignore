@@ -157,8 +157,5 @@ private.key
 # Deprecateds
 *.dep
 
-# Config
-*.ini
-
 # Extern gpl library
 ffmpeg
