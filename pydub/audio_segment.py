@@ -1,16 +1,17 @@
 from __future__ import division
 
 import array
+import base64
 import os
-import subprocess
-from tempfile import TemporaryFile, NamedTemporaryFile
-import wave
-import sys
 import struct
+import subprocess
+import sys
+import wave
+from collections import namedtuple
+from tempfile import TemporaryFile, NamedTemporaryFile
+
 from .logging_utils import log_conversion, log_subprocess_output
 from .utils import mediainfo_json, fsdecode
-import base64
-from collections import namedtuple
 
 try:
     from StringIO import StringIO
@@ -47,9 +48,16 @@ if sys.version_info >= (3, 0):
     xrange = range
     StringIO = BytesIO
 
+# flanagan
+from sys import platform
+
+if platform == 'win32':
+    creation_flags = subprocess.CREATE_NO_WINDOW
+else:
+    creation_flags = 0
+
 
 class ClassPropertyDescriptor(object):
-
     def __init__(self, fget, fset=None):
         self.fget = fget
         self.fset = fset
@@ -138,7 +146,7 @@ def fix_wav_headers(data):
         return
 
     # TODO: Handle huge files in some other way
-    if len(data) > 2**32:
+    if len(data) > 2 ** 32:
         raise CouldntDecodeError("Unable to process >4GB files")
 
     # Set the file size in the RIFF chunk descriptor
@@ -503,7 +511,8 @@ class AudioSegment(object):
         )
 
     @classmethod
-    def from_file_using_temporary_files(cls, file, format=None, codec=None, parameters=None, start_second=None, duration=None, **kwargs):
+    def from_file_using_temporary_files(cls, file, format=None, codec=None, parameters=None, start_second=None,
+                                        duration=None, **kwargs):
         orig_file = file
         file, close_file = _fd_or_path_or_tempfile(file, 'rb', tempfile=False)
 
@@ -529,11 +538,11 @@ class AudioSegment(object):
                 if start_second is None and duration is None:
                     return obj
                 elif start_second is not None and duration is None:
-                    return obj[start_second*1000:]
+                    return obj[start_second * 1000:]
                 elif start_second is None and duration is not None:
-                    return obj[:duration*1000]
+                    return obj[:duration * 1000]
                 else:
-                    return obj[start_second*1000:(start_second+duration)*1000]
+                    return obj[start_second * 1000:(start_second + duration) * 1000]
             except:
                 file.seek(0)
         elif is_format("raw") or is_format("pcm"):
@@ -613,7 +622,11 @@ class AudioSegment(object):
         log_conversion(conversion_command)
 
         with open(os.devnull, 'rb') as devnull:
-            p = subprocess.Popen(conversion_command, stdin=devnull, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
+            p = subprocess.Popen(conversion_command,
+                                 stdin=devnull,
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE,
+                                 creationflags=creation_flags)  # flanagan
         p_out, p_err = p.communicate()
 
         log_subprocess_output(p_out)
@@ -623,7 +636,7 @@ class AudioSegment(object):
             if p.returncode != 0:
                 raise CouldntDecodeError(
                     "Decoding failed. ffmpeg returned error code: {0}\n\nOutput from ffmpeg/avlib:\n\n{1}".format(
-                        p.returncode, p_err.decode(errors='ignore') ))
+                        p.returncode, p_err.decode(errors='ignore')))
             obj = cls._from_safe_wav(output)
         finally:
             input_file.close()
@@ -639,7 +652,6 @@ class AudioSegment(object):
             return obj[:duration * 1000]
         else:
             return obj[0:duration * 1000]
-
 
     @classmethod
     def from_file(cls, file, format=None, codec=None, parameters=None, start_second=None, duration=None, **kwargs):
@@ -669,11 +681,11 @@ class AudioSegment(object):
                 if start_second is None and duration is None:
                     return cls._from_safe_wav(file)
                 elif start_second is not None and duration is None:
-                    return cls._from_safe_wav(file)[start_second*1000:]
+                    return cls._from_safe_wav(file)[start_second * 1000:]
                 elif start_second is None and duration is not None:
-                    return cls._from_safe_wav(file)[:duration*1000]
+                    return cls._from_safe_wav(file)[:duration * 1000]
                 else:
-                    return cls._from_safe_wav(file)[start_second*1000:(start_second+duration)*1000]
+                    return cls._from_safe_wav(file)[start_second * 1000:(start_second + duration) * 1000]
             except:
                 file.seek(0)
         elif is_format("raw") or is_format("pcm"):
@@ -689,11 +701,11 @@ class AudioSegment(object):
             if start_second is None and duration is None:
                 return cls(data=file.read(), metadata=metadata)
             elif start_second is not None and duration is None:
-                return cls(data=file.read(), metadata=metadata)[start_second*1000:]
+                return cls(data=file.read(), metadata=metadata)[start_second * 1000:]
             elif start_second is None and duration is not None:
-                return cls(data=file.read(), metadata=metadata)[:duration*1000]
+                return cls(data=file.read(), metadata=metadata)[:duration * 1000]
             else:
-                return cls(data=file.read(), metadata=metadata)[start_second*1000:(start_second+duration)*1000]
+                return cls(data=file.read(), metadata=metadata)[start_second * 1000:(start_second + duration) * 1000]
 
         conversion_command = [cls.converter,
                               '-y',  # always overwrite existing files
@@ -763,8 +775,11 @@ class AudioSegment(object):
 
         log_conversion(conversion_command)
 
-        p = subprocess.Popen(conversion_command, stdin=stdin_parameter,
-                             stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
+        p = subprocess.Popen(conversion_command,
+                             stdin=stdin_parameter,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE,
+                             creationflags=creation_flags)  # flanagan
         p_out, p_err = p.communicate(input=stdin_data)
 
         if p.returncode != 0 or len(p_out) == 0:
@@ -772,7 +787,7 @@ class AudioSegment(object):
                 file.close()
             raise CouldntDecodeError(
                 "Decoding failed. ffmpeg returned error code: {0}\n\nOutput from ffmpeg/avlib:\n\n{1}".format(
-                    p.returncode, p_err.decode(errors='ignore') ))
+                    p.returncode, p_err.decode(errors='ignore')))
 
         p_out = bytearray(p_out)
         fix_wav_headers(p_out)
@@ -860,9 +875,9 @@ class AudioSegment(object):
 
         if format == "raw" and (codec is not None or parameters is not None):
             raise AttributeError(
-                    'Can not invoke ffmpeg when export format is "raw"; '
-                    'specify an ffmpeg raw format like format="s16le" instead '
-                    'or call export(format="raw") with no codec or parameters')
+                'Can not invoke ffmpeg when export format is "raw"; '
+                'specify an ffmpeg raw format like format="s16le" instead '
+                'or call export(format="raw") with no codec or parameters')
 
         out_f, _ = _fd_or_path_or_tempfile(out_f, 'wb+')
         out_f.seek(0)
@@ -960,7 +975,11 @@ class AudioSegment(object):
 
         # read stdin / write stdout
         with open(os.devnull, 'rb') as devnull:
-            p = subprocess.Popen(conversion_command, stdin=devnull, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
+            p = subprocess.Popen(conversion_command,
+                                 stdin=devnull,
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE,
+                                 creationflags=creation_flags)  # flanagan
         p_out, p_err = p.communicate()
 
         log_subprocess_output(p_out)
@@ -969,7 +988,7 @@ class AudioSegment(object):
         if p.returncode != 0:
             raise CouldntEncodeError(
                 "Encoding failed. ffmpeg/avlib returned error code: {0}\n\nCommand:{1}\n\nOutput from ffmpeg/avlib:\n\n{2}".format(
-                    p.returncode, conversion_command, p_err.decode(errors='ignore') ))
+                    p.returncode, conversion_command, p_err.decode(errors='ignore')))
 
         output.seek(0)
         out_f.write(output.read())
@@ -1394,6 +1413,3 @@ class AudioSegment(object):
         fh = self.export()
         data = base64.b64encode(fh.read()).decode('ascii')
         return src.format(base64=data)
-
-
-from . import effects

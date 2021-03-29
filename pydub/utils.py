@@ -4,11 +4,11 @@ import json
 import os
 import re
 import sys
-from subprocess import Popen, PIPE, CREATE_NO_WINDOW
+from functools import wraps
 from math import log, ceil
+from subprocess import Popen, PIPE, CREATE_NO_WINDOW
 from tempfile import TemporaryFile
 from warnings import warn
-from functools import wraps
 
 try:
     import audioop
@@ -33,6 +33,14 @@ ARRAY_RANGES = {
     16: (-0x8000, 0x7fff),
     32: (-0x80000000, 0x7fffffff),
 }
+
+# flanagan
+from sys import platform
+
+if platform == 'win32':
+    creation_flags = CREATE_NO_WINDOW
+else:
+    creation_flags = 0
 
 
 def get_frame_width(bit_depth):
@@ -271,7 +279,7 @@ def mediainfo_json(filepath, read_ahead_limit=-1):
             file.close()
 
     command = [prober, '-of', 'json'] + command_args
-    res = Popen(command, stdin=stdin_parameter, stdout=PIPE, stderr=PIPE, creationflags=CREATE_NO_WINDOW)
+    res = Popen(command, stdin=stdin_parameter, stdout=PIPE, stderr=PIPE, creationflags=creation_flags) # flanagan
     output, stderr = res.communicate(input=stdin_data)
     output = output.decode("utf-8", 'ignore')
     stderr = stderr.decode("utf-8", 'ignore')
@@ -331,12 +339,12 @@ def mediainfo(filepath):
     ]
 
     command = [prober, '-of', 'old'] + command_args
-    res = Popen(command, stdout=PIPE, creationflags=CREATE_NO_WINDOW)
+    res = Popen(command, stdout=PIPE, creationflags=creation_flags) #flanagan
     output = res.communicate()[0].decode("utf-8")
 
     if res.returncode != 0:
         command = [prober] + command_args
-        output = Popen(command, stdout=PIPE, creationflags=CREATE_NO_WINDOW).communicate()[0].decode("utf-8")
+        output = Popen(command, stdout=PIPE, creationflags=creation_flags).communicate()[0].decode("utf-8") #flanagan
 
     rgx = re.compile(r"(?:(?P<inner_dict>.*?):)?(?P<key>.*?)\=(?P<value>.*?)$")
     info = {}
@@ -382,14 +390,13 @@ def cache_codecs(function):
 def get_supported_codecs():
     encoder = get_encoder_name()
     command = [encoder, "-codecs"]
-    res = Popen(command, stdout=PIPE, stderr=PIPE, creationflags=CREATE_NO_WINDOW)
+    res = Popen(command, stdout=PIPE, stderr=PIPE, creationflags=creation_flags) #flanagan
     output = res.communicate()[0].decode("utf-8")
     if res.returncode != 0:
         return []
 
     if sys.platform == 'win32':
         output = output.replace("\r", "")
-
 
     rgx = re.compile(r"^([D.][E.][AVS.][I.][L.][S.]) (\w*) +(.*)")
     decoders = set()
@@ -416,19 +423,20 @@ def get_supported_decoders():
 def get_supported_encoders():
     return get_supported_codecs()[1]
 
+
 def stereo_to_ms(audio_segment):
-	'''
-	Left-Right -> Mid-Side
-	'''
-	channel = audio_segment.split_to_mono()
-	channel = [channel[0].overlay(channel[1]), channel[0].overlay(channel[1].invert_phase())]
-	return AudioSegment.from_mono_audiosegments(channel[0], channel[1])
+    '''
+    Left-Right -> Mid-Side
+    '''
+    channel = audio_segment.split_to_mono()
+    channel = [channel[0].overlay(channel[1]), channel[0].overlay(channel[1].invert_phase())]
+    return AudioSegment.from_mono_audiosegments(channel[0], channel[1])
+
 
 def ms_to_stereo(audio_segment):
-	'''
-	Mid-Side -> Left-Right
-	'''
-	channel = audio_segment.split_to_mono()
-	channel = [channel[0].overlay(channel[1]) - 3, channel[0].overlay(channel[1].invert_phase()) - 3]
-	return AudioSegment.from_mono_audiosegments(channel[0], channel[1])
-
+    '''
+    Mid-Side -> Left-Right
+    '''
+    channel = audio_segment.split_to_mono()
+    channel = [channel[0].overlay(channel[1]) - 3, channel[0].overlay(channel[1].invert_phase()) - 3]
+    return AudioSegment.from_mono_audiosegments(channel[0], channel[1])

@@ -159,3 +159,6 @@ private.key
 
 # Extern gpl library
 ffmpeg
+
+# Config
+*.ini
