@@ -6,7 +6,8 @@ import re
 import sys
 from functools import wraps
 from math import log, ceil
-from subprocess import Popen, PIPE, CREATE_NO_WINDOW
+from subprocess import Popen, PIPE
+import subprocess
 from tempfile import TemporaryFile
 from warnings import warn
 
@@ -38,7 +39,7 @@ ARRAY_RANGES = {
 from sys import platform
 
 if platform == 'win32':
-    creation_flags = CREATE_NO_WINDOW
+    creation_flags = subprocess.CREATE_NO_WINDOW
 else:
     creation_flags = 0
 
