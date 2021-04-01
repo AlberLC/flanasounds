@@ -19,8 +19,6 @@ VK_TO_NUMPAD = {
 
 
 class Controller:
-    # signal = QtCore.Signal()
-
     def __init__(self, gui: Gui):
         self.gui = gui
         self.folder = None
@@ -226,10 +224,11 @@ class Controller:
                 self.gui.tree_sounds.setCurrentItem(self.gui.tree_sounds.topLevelItem(index))
 
         elif key.vk in range(97, 106):  # vk codes for keypad numbers
-            try:
-                self.gui.tree_sounds.itemActivated.emit(self.current_top_level_item.child(VK_TO_NUMPAD[key.vk] - 1), 0)
-            except ValueError:
-                return
+            if self.current_top_level_item is not None:
+                try:
+                    self.gui.tree_sounds.itemActivated.emit(self.current_top_level_item.child(VK_TO_NUMPAD[key.vk] - 1), 0)
+                except ValueError:
+                    return
 
         elif key.vk == 107:  # key numpad +
             self._volume_up()
@@ -401,4 +400,5 @@ class Controller:
             output.stop()
         for output in speakers_outputs:
             output.stop()
+
         self._release_key_to_talk()
