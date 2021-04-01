@@ -401,3 +401,4 @@ class Controller:
             output.stop()
         for output in speakers_outputs:
             output.stop()
+        self._release_key_to_talk()
