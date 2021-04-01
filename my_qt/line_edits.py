@@ -1,5 +1,5 @@
-import keyboard
 from PySide2 import QtCore, QtGui, QtWidgets
+from pynput import keyboard
 
 from config import resources
 from utils import resource_path
@@ -8,8 +8,9 @@ from utils import resource_path
 class ShortcutLineEdit(QtWidgets.QLineEdit):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.hook = None
+        self.listener = None
         self.pressed_keys = set()
+        self.sorted_pressed_keys = []
 
         layout = QtWidgets.QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 4, 0)
@@ -28,15 +29,32 @@ class ShortcutLineEdit(QtWidgets.QLineEdit):
     def focusInEvent(self, event):
         super().focusInEvent(event)
         self.pressed_keys = set()
-        self.hook = keyboard.hook(self._key_event)
+        self.listener = keyboard.Listener(on_press=self._pressed_key, on_release=self._release_key)
+        self.listener.start()
 
     def focusOutEvent(self, event):
         super().focusOutEvent(event)
-        keyboard.unhook(self.hook)
+        self.listener.stop()
 
-    def _key_event(self, event):
-        if event.event_type == keyboard.KEY_DOWN:
-            self.pressed_keys.add(keyboard.normalize_name(event.name).lower().replace('mayusculas', 'shift'))
-            self.setText(keyboard.get_hotkey_name(self.pressed_keys))
+    def _pressed_key(self, key):
+        self.pressed_keys.add(self._normalize_key_name(self.listener.canonical(key)))
+        self.set_pressed_keys(self.pressed_keys)
+
+    def _normalize_key_name(self, key):
+        if type(key) is keyboard.Key:
+            return key.name
         else:
-            self.pressed_keys.discard(event.name.lower().replace('mayusculas', 'shift'))
+            return str(key).replace('Key.', '').replace("'", "")
+
+    def _release_key(self, key):
+        self.pressed_keys.discard(self._normalize_key_name(self.listener.canonical(key)))
+
+    def set_pressed_keys(self, pressed_keys_):
+        pressed_keys = pressed_keys_.copy()
+        modifiers_in_order = ('ctrl', 'alt', 'alt_gr', 'shift')
+
+        self.sorted_pressed_keys = [modifier for modifier in modifiers_in_order if modifier in pressed_keys]
+        pressed_keys.difference_update(modifiers_in_order)
+        self.sorted_pressed_keys.extend(pressed_keys)
+
+        self.setText('+'.join(self.sorted_pressed_keys))

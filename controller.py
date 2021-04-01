@@ -2,19 +2,25 @@ import json
 from collections import defaultdict
 from random import choice
 
-import keyboard
 from PySide2 import QtCore, QtGui, QtMultimedia, QtWidgets
+from pynput import keyboard
 
 from config import config, settings, volume
 from gui import Gui
 from my_qt.threads import FFmpegThread
 
-CATEGORY_SYMBOLS = {
-    2: '1', 3: '2', 4: '3', 5: '4', 6: '5', 7: '6', 8: '7', 9: '8', 10: '9', 11: '0', 12: "'?", 13: '¡?'
+VK_TO_CATEGORY = {
+    49: '1', 50: '2', 51: '3', 52: '4', 53: '5', 54: '6', 55: '7', 56: '8', 57: '9', 48: '0', 219: "'?", 221: '¡?'
+}
+
+VK_TO_NUMPAD = {
+    96: 0, 97: 1, 98: 2, 99: 3, 100: 4, 101: 5, 102: 6, 103: 7, 104: 8, 105: 9, 107: '+', 109: '-', 110: '.'
 }
 
 
 class Controller:
+    # signal = QtCore.Signal()
+
     def __init__(self, gui: Gui):
         self.gui = gui
         self.folder = None
@@ -27,26 +33,22 @@ class Controller:
         self.play_on_speakers = True
         self.selected_output_volume = 0
         self.speakers_volume = 0
+        self.keyboard = keyboard.Controller()
         self.talk_key = None
         self.current_top_level_item = None
         self.sounds = defaultdict(dict)
         self.thread = None
         self.movie = None
         self.pool = None
+        # self.signal.connect(self.pause)
 
         self._load_system_outputs()
         self._load_settings()
         self._add_hotkeys()
 
     def _add_hotkeys(self):
-        for i in range(10):
-            keyboard.on_press_key(str(i), self._pressed_key)
-        keyboard.on_press_key("'", self._pressed_key)
-        keyboard.on_press_key('¡', self._pressed_key)
-        keyboard.on_press_key('decimal', self._pressed_key)
-        keyboard.on_press_key('+', self._pressed_key)
-        keyboard.on_press_key('-', self._pressed_key)
-        keyboard.on_press_key('esc', self._pressed_key)
+        listener = keyboard.Listener(on_press=self._pressed_key)
+        listener.start()
 
     def _changed_selected_output_volume(self, value):
         self.selected_output_volume = value
@@ -79,8 +81,7 @@ class Controller:
             else:
                 self.gui.set_stop_mode()
                 self.last_output = None
-                if self.talk_key:
-                    keyboard.release(self.talk_key)
+                self._release_key_to_talk()
         else:
             self.speakers_outputs.discard(output)
 
@@ -142,8 +143,11 @@ class Controller:
         self.gui.combo_output.addItems(output.deviceName() for output in self.outputs_info)
 
     def _load_talk_key_settings(self):
-        self.talk_key = settings['talk_key']
-        self.gui.line_talk_key.setText(self.talk_key)
+        try:
+            self.talk_key = set(json.loads(settings['talk_key']))
+        except json.decoder.JSONDecodeError:
+            self.talk_key = set()
+        self.gui.line_talk_key.set_pressed_keys(self.talk_key)
 
     def _load_tree_items(self):
         self.set_loading_gif_visible(True)
@@ -180,8 +184,7 @@ class Controller:
         except IndexError:
             return
 
-        if self.talk_key:
-            keyboard.press(self.talk_key)
+        self._press_key_to_talk()
         self.gui.set_play_mode()
 
         selected_output = self._make_output(self.selected_output_info, data, self.selected_output_volume * 0.01)
@@ -193,8 +196,18 @@ class Controller:
                                             volume=self.speakers_volume * 0.01 if self.play_on_speakers else 0)
         self.speakers_outputs.add(speakers_output)
 
-    def _pressed_key(self, event):
+    def _press_key_to_talk(self):
+        for key in self.talk_key:
+            self.keyboard.press(self._str_to_key(key))
+
+    def _pressed_key(self, key):
+        if key is keyboard.Key.esc:
+            self.gui.tree_sounds.setCurrentItem(None)
+            return
+
         if (
+                type(key) is not keyboard.KeyCode
+                or
                 self.gui.spin_volume_selected.hasFocus()
                 or
                 self.gui.spin_volume_speakers.hasFocus()
@@ -203,32 +216,33 @@ class Controller:
         ):
             return
 
-        if event.is_keypad:
-            if event.name == '+':
-                self._volume_up()
-            elif event.name == '-':
-                self._volume_down()
-            elif event.name == '0':
-                self.pause()
-            elif event.name == 'decimal':
-                self.stop()
-            elif self.current_top_level_item is not None:
-                try:
-                    self.gui.tree_sounds.itemActivated.emit(self.current_top_level_item.child(int(event.name) - 1),
-                                                            0)
-                except ValueError:
-                    return
-        else:
-            if event.name == 'esc':
-                self.gui.tree_sounds.setCurrentItem(None)
-            else:
-                for i, key_code in enumerate(CATEGORY_SYMBOLS):
-                    if key_code == event.scan_code:
-                        break
-                else:
-                    i = None
-                if i is not None and i < self.gui.tree_sounds.topLevelItemCount():
-                    self.gui.tree_sounds.setCurrentItem(self.gui.tree_sounds.topLevelItem(i))
+        if key.vk in (*range(48, 58), 219, 221):  # vk codes for numbers and '? ¡¿
+            try:
+                index = list(VK_TO_CATEGORY.keys()).index(key.vk)
+            except ValueError:
+                index = None
+
+            if index is not None and index < self.gui.tree_sounds.topLevelItemCount():
+                self.gui.tree_sounds.setCurrentItem(self.gui.tree_sounds.topLevelItem(index))
+
+        elif key.vk in range(97, 106):  # vk codes for keypad numbers
+            try:
+                self.gui.tree_sounds.itemActivated.emit(self.current_top_level_item.child(VK_TO_NUMPAD[key.vk] - 1), 0)
+            except ValueError:
+                return
+
+        elif key.vk == 107:  # key numpad +
+            self._volume_up()
+        elif key.vk == 109:  # key numpad -
+            self._volume_down()
+        elif key.vk == 96:  # key numpad 0
+            self.gui.play_pause_signal.emit()
+        elif key.vk == 110:  # key numpad .
+            self.stop()
+
+    def _release_key_to_talk(self):
+        for key in self.talk_key:
+            self.keyboard.release(self._str_to_key(key))
 
     def _set_selected_output_volume(self, volume=None, outputs=None):
         volume = volume if volume is not None else self.selected_output_volume
@@ -241,6 +255,15 @@ class Controller:
         outputs = outputs if outputs is not None else self.speakers_outputs.copy()
         for output in outputs:
             output.setVolume(volume * 0.01 if self.play_on_speakers else 0)
+
+    def _str_to_key(self, key_str):
+        if len(key_str) == 1:
+            return keyboard.KeyCode(char=key_str)
+        else:
+            try:
+                return keyboard.KeyCode(int(key_str.replace('<', '').replace('>', '')))
+            except ValueError:
+                return keyboard.Key[key_str]
 
     def _volume_down(self):
         self.gui.slider_volume_selected.setValue(self.selected_output_volume - 1)
@@ -272,9 +295,9 @@ class Controller:
         self.gui.slider_volume_speakers.setValue(value)
         self._changed_speakers_volume(value)
 
-    def changed_talk_key(self, talk_key):
-        self.talk_key = talk_key
-        settings['talk_key'] = self.talk_key
+    def changed_talk_key(self):
+        self.talk_key = self.gui.line_talk_key.sorted_pressed_keys
+        settings['talk_key'] = json.dumps(self.talk_key)
         config.save()
 
     def changed_tree_selection(self, item):
@@ -305,7 +328,7 @@ class Controller:
             self.sounds.clear()
             self._load_tree_items()
 
-    def pause(self):
+    def play_pause(self):
         if not self.selected_outputs:
             return
 
@@ -317,13 +340,11 @@ class Controller:
             for output in self.speakers_outputs.copy():
                 output.suspend()
 
-            if self.talk_key:
-                keyboard.release(self.talk_key)
+            self._release_key_to_talk()
         else:
             self.gui.set_play_mode()
 
-            if self.talk_key:
-                keyboard.press(self.talk_key)
+            self._press_key_to_talk()
 
             for output in self.selected_outputs.copy():
                 output.resume()

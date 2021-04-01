@@ -11,7 +11,7 @@ KEY_PLUS = 43
 KEY_MINUS = 45
 KEY_PERIOD = 46
 
-OFFSET_DICT_KEY = 2
+OFFSET_DICT_KEY = 49
 
 
 class NoFocusDelegate(QtWidgets.QStyledItemDelegate):
@@ -26,7 +26,7 @@ class CategoryTreeWidgetItem(QtWidgets.QTreeWidgetItem):
         super().__init__()
         self.name = name
 
-        prefix = controller_module.CATEGORY_SYMBOLS.get(index + OFFSET_DICT_KEY, '')
+        prefix = controller_module.VK_TO_CATEGORY.get(index + OFFSET_DICT_KEY, '')
         self.setText(0, f'{prefix:>2} ----- {name} -----')
 
 
@@ -52,8 +52,9 @@ class SoundTreeWidget(QtWidgets.QTreeWidget):
             items = (self.topLevelItem(i) for i in range(self.topLevelItemCount()))
             sounds_aux = sounds.copy()
             sounds.clear()
-            for i, item in enumerate(items, start=2):
-                prefix = controller_module.CATEGORY_SYMBOLS.get(i, '')
+            for i, item in enumerate(items, start=OFFSET_DICT_KEY):
+                prefix = controller_module.VK_TO_CATEGORY.get(i, '')
+                print(prefix)
                 item.setText(0, f'{prefix:>2}{item.text(0)[2:]}')
                 sounds[item.name] = sounds_aux[item.name]
         else:

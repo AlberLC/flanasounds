@@ -1,7 +1,5 @@
 import configparser
 
-from utils import resource_path
-
 
 class Config(configparser.ConfigParser):
     def __init__(self, path):

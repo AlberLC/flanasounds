@@ -39,6 +39,7 @@ class Gui(QtWidgets.QWidget):
     group_volume: QtWidgets.QGroupBox
 
     tree_sounds: QtWidgets.QTreeWidget
+    play_pause_signal = QtCore.Signal()
 
     def __init__(self):
         super().__init__()
@@ -83,7 +84,7 @@ class Gui(QtWidgets.QWidget):
 
     def connect_signals(self, controller: 'controller.Controller'):
         self.button_folder.clicked.connect(controller.open_explorer)
-        self.button_pause.clicked.connect(controller.pause)
+        self.button_pause.clicked.connect(controller.play_pause)
         self.button_stop.clicked.connect(controller.stop)
 
         self.check_play_on_speakers.stateChanged.connect(controller.checked_play_on_speakers)
@@ -99,6 +100,8 @@ class Gui(QtWidgets.QWidget):
         self.slider_volume_speakers.valueChanged.connect(controller.changed_speakers_volume_slider)
 
         self.tree_sounds.connect_signals(controller)
+
+        self.play_pause_signal.connect(controller.play_pause)
 
     def keyPressEvent(self, event):
         super().keyPressEvent(event)
