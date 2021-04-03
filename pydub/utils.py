@@ -3,10 +3,11 @@ from __future__ import division
 import json
 import os
 import re
+import subprocess
 import sys
 from functools import wraps
 from math import log, ceil
-from subprocess import Popen, PIPE, CREATE_NO_WINDOW
+from subprocess import Popen, PIPE
 from tempfile import TemporaryFile
 from warnings import warn
 
@@ -38,7 +39,7 @@ ARRAY_RANGES = {
 from sys import platform
 
 if platform == 'win32':
-    creation_flags = CREATE_NO_WINDOW
+    creation_flags = subprocess.CREATE_NO_WINDOW
 else:
     creation_flags = 0
 
@@ -279,7 +280,7 @@ def mediainfo_json(filepath, read_ahead_limit=-1):
             file.close()
 
     command = [prober, '-of', 'json'] + command_args
-    res = Popen(command, stdin=stdin_parameter, stdout=PIPE, stderr=PIPE, creationflags=creation_flags) # flanagan
+    res = Popen(command, stdin=stdin_parameter, stdout=PIPE, stderr=PIPE, creationflags=creation_flags)  # flanagan
     output, stderr = res.communicate(input=stdin_data)
     output = output.decode("utf-8", 'ignore')
     stderr = stderr.decode("utf-8", 'ignore')
@@ -339,12 +340,12 @@ def mediainfo(filepath):
     ]
 
     command = [prober, '-of', 'old'] + command_args
-    res = Popen(command, stdout=PIPE, creationflags=creation_flags) #flanagan
+    res = Popen(command, stdout=PIPE, creationflags=creation_flags)  # flanagan
     output = res.communicate()[0].decode("utf-8")
 
     if res.returncode != 0:
         command = [prober] + command_args
-        output = Popen(command, stdout=PIPE, creationflags=creation_flags).communicate()[0].decode("utf-8") #flanagan
+        output = Popen(command, stdout=PIPE, creationflags=creation_flags).communicate()[0].decode("utf-8")  # flanagan
 
     rgx = re.compile(r"(?:(?P<inner_dict>.*?):)?(?P<key>.*?)\=(?P<value>.*?)$")
     info = {}
@@ -390,7 +391,7 @@ def cache_codecs(function):
 def get_supported_codecs():
     encoder = get_encoder_name()
     command = [encoder, "-codecs"]
-    res = Popen(command, stdout=PIPE, stderr=PIPE, creationflags=creation_flags) #flanagan
+    res = Popen(command, stdout=PIPE, stderr=PIPE, creationflags=creation_flags)  # flanagan
     output = res.communicate()[0].decode("utf-8")
     if res.returncode != 0:
         return []

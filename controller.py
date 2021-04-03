@@ -356,7 +356,7 @@ class Controller:
             self.gui.label_loading_gif.setMovie(self.movie)
             self.movie.start()
             self.gui.label_loading_gif.show()
-        else:
+        else:2
             self.gui.label_loading_gif.hide()
             self.movie.stop()
 
@@ -380,3 +380,6 @@ class Controller:
             output.stop()
         for output in speakers_outputs:
             output.stop()
+
+        if self.talk_key:
+            keyboard.release(self.talk_key)
