@@ -5,10 +5,10 @@ from multiprocessing.pool import Pool, ThreadPool
 from pathlib import Path
 
 from PySide2 import QtCore, QtWidgets
-from pydub import AudioSegment, effects
 
 from config import settings
 from my_qt.tree_widgets import CategoryTreeWidgetItem, SoundTreeWidgetItem
+from pydub import AudioSegment, effects
 
 translate = QtWidgets.QApplication.translate
 
@@ -47,20 +47,26 @@ class FFmpegThread(QtCore.QThread):
     def _add_sorted_tree_items(self):
         categories_to_clean = defaultdict(list)
 
-        for i, (category_name, sounds) in enumerate(self.controller.sounds.items()):
+        i = 0
+        categories = self.controller.sounds.items()
+        for category_name, sounds in categories:
             top_level_item = CategoryTreeWidgetItem(index=i, name=category_name)
 
-            for j, (sound_name, bytes_) in enumerate(self.controller.sounds[category_name].items()):
+            category_sounds = self.controller.sounds[category_name].items()
+            j = 0
+            for sound_name, bytes_ in category_sounds:
                 if bytes_:
                     top_level_item.addChild(SoundTreeWidgetItem(index=j, name=sound_name))
                 else:
+                    j -= 1
                     categories_to_clean[category_name].append(sound_name)
+                j += 1
 
-            try:
-                if len(categories_to_clean[category_name]) < len(self.controller.sounds[category_name]):
-                    self.controller.gui.tree_sounds.addTopLevelItem(top_level_item)
-            except IndexError:
-                pass
+            if len(categories_to_clean[category_name]) < len(self.controller.sounds[category_name]):
+                self.controller.gui.tree_sounds.addTopLevelItem(top_level_item)
+            else:
+                i -= 1
+            i += 1
 
         self._clean_old_sounds(categories_to_clean)
 

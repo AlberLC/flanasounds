@@ -1,7 +1,7 @@
 from PySide2 import QtGui, QtWidgets, QtCore
 
 import controller as controller_module
-from my_qt.utils import set_inative_style
+from my_qt.utils import set_inactive_style
 
 KEY_0 = 48
 KEY_9 = 57
@@ -44,7 +44,7 @@ class SoundTreeWidget(QtWidgets.QTreeWidget):
         super().__init__(*args, **kwargs)
         self.controller = None
 
-        set_inative_style(self)
+        set_inactive_style(self)
         self.setItemDelegate(NoFocusDelegate())
 
     def _rename_item_prefixes(self, parent, sounds: dict):
@@ -52,7 +52,7 @@ class SoundTreeWidget(QtWidgets.QTreeWidget):
             items = (self.topLevelItem(i) for i in range(self.topLevelItemCount()))
             sounds_aux = sounds.copy()
             sounds.clear()
-            for i, item in enumerate(items, start=2):
+            for i, item in enumerate(items, start=OFFSET_DICT_KEY):
                 prefix = controller_module.CATEGORY_SYMBOLS.get(i, '')
                 item.setText(0, f'{prefix:>2}{item.text(0)[2:]}')
                 sounds[item.name] = sounds_aux[item.name]
@@ -96,6 +96,7 @@ class SoundTreeWidget(QtWidgets.QTreeWidget):
                 self.takeTopLevelItem(self.indexOfTopLevelItem(item))
             else:
                 new_parent.takeChild(new_parent.indexOfChild(item))
+
             if old_parent is None:
                 self.insertTopLevelItem(old_index, item)
             else:

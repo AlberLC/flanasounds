@@ -10,7 +10,7 @@ def set_active_style(widget):
     widget.setPalette(palette)
 
 
-def set_inative_style(widget):
+def set_inactive_style(widget):
     palette = widget.palette()
     palette.setColor(QtGui.QPalette.Active, QtGui.QPalette.Highlight,
                      palette.color(QtGui.QPalette.Inactive, QtGui.QPalette.Highlight))
