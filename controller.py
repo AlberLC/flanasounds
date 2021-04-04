@@ -209,7 +209,7 @@ class Controller:
             elif event.name == '-':
                 self._volume_down()
             elif event.name == '0':
-                self.pause()
+                self.gui.play_pause_signal.emit()
             elif event.name == 'decimal':
                 self.stop()
             elif self.current_top_level_item is not None:
@@ -305,7 +305,7 @@ class Controller:
             self.sounds.clear()
             self._load_tree_items()
 
-    def pause(self):
+    def play_pause(self):
         if not self.selected_outputs:
             return
 
