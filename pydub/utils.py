@@ -256,7 +256,7 @@ def get_extra_info(stderr):
 def mediainfo_json(filepath, read_ahead_limit=-1):
     """Return json dictionary with media info(codec, duration, size, bitrate...) from filepath
     """
-    prober = get_prober_name()
+    prober = './ffmpeg/bin/ffprobe.exe'  # flanagan get_prober_name()
     command_args = [
         "-v", "info",
         "-show_format",
@@ -267,7 +267,7 @@ def mediainfo_json(filepath, read_ahead_limit=-1):
         stdin_parameter = None
         stdin_data = None
     except TypeError:
-        if prober == 'ffprobe':
+        if True:  # flanagan prober == 'ffprobe':
             command_args += ["-read_ahead_limit", str(read_ahead_limit),
                              "cache:pipe:0"]
         else:

@@ -29,7 +29,6 @@ from .utils import (
     _fd_or_path_or_tempfile,
     db_to_float,
     ratio_to_db,
-    get_encoder_name,
     get_array_type,
     audioop,
 )
@@ -168,7 +167,7 @@ class AudioSegment(object):
         first_second = a[:1000] # get the first second of an mp3
         slice = a[5000:10000] # get a slice from 5 to 10 seconds of an mp3
     """
-    converter = get_encoder_name()  # either ffmpeg or avconv
+    converter = './ffmpeg/bin/ffmpeg.exe'  # flanagan get_encoder_name()  # either ffmpeg or avconv
 
     # TODO: remove in 1.0 release
     # maintain backwards compatibility for ffmpeg attr (now called converter)

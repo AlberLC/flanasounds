@@ -1,5 +1,6 @@
 import io
 import json
+import traceback
 from collections import defaultdict
 from multiprocessing.pool import Pool, ThreadPool
 from pathlib import Path
@@ -16,8 +17,11 @@ translate = QtWidgets.QApplication.translate
 def _load_sound_bytes(sound_path):
     buffer = io.BytesIO()
     try:
+        print('-------', sound_path, '-------')
         sound = AudioSegment.from_file(sound_path)
-    except:
+    except Exception as e:
+        traceback.print_tb(e.__traceback__)
+        print(222222222, e.__class__.__name__, e)
         return
 
     sound = effects.normalize(sound)
@@ -101,7 +105,9 @@ class FFmpegThread(QtCore.QThread):
             self._load_sound_bytes()
             self._add_sorted_tree_items()
             self.controller.save_sounds()
-        except:
+        except Exception as e:
+            traceback.print_tb(e.__traceback__)
             self.controller.gui.tree_sounds.clear()
+            print(1111111111, e.__class__.__name__, e)
         finally:
             self.controller.set_loading_gif_visible(False)
