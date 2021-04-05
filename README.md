@@ -8,27 +8,32 @@ An application to play sounds through the microphone, perfect for discord or any
 
 ## Installation
 ### Windows
-**1. Install a virtual cable.**  
+<ins>**1. Install a virtual cable.**</ins>
+
 Install a virtual cable like https://vb-audio.com/Cable/.
 
 Once you have installed it, go to the windows audio output settings. Be careful, when you install this vb-audio cable, the virtual output is set by default, change it to the one you had before:
 
 Now we need to make the sound of your microphone be heard by that new output:
 
-We are going to use the new audio output as a microphone:  
+We are going to use the new audio output as a microphone:
 
-**2. Install FlanaSounds.**  
+<ins>**2. Install FlanaSounds.**  </ins>
+
 You have 2 options:
 
-<ins>a) Recommended option:</ins>  
+<ins>a) Recommended option:</ins>
+
 Download the release and run FlanaSounds.exe
 
 <ins>b) Clone the repository:</ins>
 1. Install Python.
-2. Clone the repository.  
+2. Clone the repository.
+
 ```
 git clone https://github.com/AlberLC/flanasounds.git
 ```
+
 3. Install the pip packages.  
 ```
 pip install -r requirements.txt
@@ -42,8 +47,10 @@ keyboard library needs root on Linux.
     ```
     git clone https://github.com/AlberLC/flanasounds.git
     ```
-3. Install the pip packages.  
-   You might prefer to install keyboard via root so you don't have to run the program as root every time.  
+3. Install the pip packages.
+
+   You might prefer to install keyboard via root so you don't have to run the program as root every time.
+   
    ```
    pip install -r requirements.txt
    ```
