@@ -20,7 +20,7 @@ We are going to use the new audio output as a microphone:
 **2. Install FlanaSounds.**  
 You have 2 options:
 
-<ins>a) Recommended option:</ins>
+<ins>a) Recommended option:</ins>  
 Download the release and run FlanaSounds.exe
 
 <ins>b) Clone the repository:</ins>
