@@ -29,9 +29,9 @@ Download the release and unzip it.
 <ins>b) Clone the repository:</ins>
 1. Install Python.
 2. Clone the repository.
-```
-git clone https://github.com/AlberLC/flanasounds.git
-```
+    ```
+    git clone https://github.com/AlberLC/flanasounds.git
+    ```
 3. Install the pip packages.  
     ```
     pip install -r requirements.txt
