@@ -24,33 +24,30 @@ You have 2 options:
 
 <ins>a) Recommended option:</ins>
 
-Download the release and run FlanaSounds.exe
+Download the release and unzip it.
 
 <ins>b) Clone the repository:</ins>
 1. Install Python.
 2. Clone the repository.
-
 ```
 git clone https://github.com/AlberLC/flanasounds.git
 ```
-
 3. Install the pip packages.  
-```
-pip install -r requirements.txt
-```
+    ```
+    pip install -r requirements.txt
+    ```
 
 ### Linux
 keyboard library needs root on Linux.
 
 1. Install Python.
-2. Clone the repository.  
+2. Clone the repository.
     ```
     git clone https://github.com/AlberLC/flanasounds.git
     ```
 3. Install the pip packages.
 
-   You might prefer to install keyboard via root so you don't have to run the program as root every time.
-   
+   You might prefer to install keyboard via root so you don't have to run the program as root every time.   
    ```
    pip install -r requirements.txt
    ```
