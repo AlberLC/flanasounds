@@ -32,7 +32,7 @@ Download the release and unzip it.
     ```
     git clone https://github.com/AlberLC/flanasounds.git
     ```
-3. Install the pip packages.  
+3. Install the pip packages.
     ```
     pip install -r requirements.txt
     ```
@@ -47,10 +47,10 @@ keyboard library needs root on Linux.
     ```
 3. Install the pip packages.
 
-   You might prefer to install keyboard via root so you don't have to run the program as root every time.   
-   ```
-   pip install -r requirements.txt
-   ```
+You might prefer to install keyboard via root so you don't have to run the program as root every time.
+    ```
+    pip install -r requirements.txt
+    ```
 
 ## Usage
 Run `FlanaSounds.exe` if you downloaded the release or run `main.pyw` if you cloned the repository.
