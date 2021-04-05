@@ -47,7 +47,7 @@ keyboard library needs root on Linux.
     ```
 3. Install the pip packages.
 
-    You might prefer to install keyboard via root so you don't have to run the program as root every time.
+You might prefer to install keyboard via root so you don't have to run the program as root every time.
     ```
     pip install -r requirements.txt
     ```
