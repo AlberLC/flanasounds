@@ -17,30 +17,36 @@ Now we need to make the sound of your microphone be heard by that new output:
 
 We are going to use the new audio output as a microphone:  
 
-2. Install FlanaSounds.
+**2. Install FlanaSounds.**  
 You have 2 options:
 
-a) Recommended option:
+<ins>a) Recommended option:</ins>
 Download the release and run FlanaSounds.exe
 
-**b) Clone the repository**    
+<ins>b) Clone the repository:</ins>
 1. Install Python.
 2. Clone the repository.  
 ```
 git clone https://github.com/AlberLC/flanasounds.git
 ```
 3. Install the pip packages.  
-`pip install -r requirements.txt`
+```
+pip install -r requirements.txt
+```
 
 ### Linux
 keyboard library needs root on Linux.
 
 1. Install Python.
 2. Clone the repository.  
-    `git clone https://github.com/AlberLC/flanasounds.git`
+    ```
+    git clone https://github.com/AlberLC/flanasounds.git
+    ```
 3. Install the pip packages.  
    You might prefer to install keyboard via root so you don't have to run the program as root every time.  
-   `pip install -r requirements.txt`
+   ```
+   pip install -r requirements.txt
+   ```
 
 ## Usage
 Run `FlanaSounds.exe` if you downloaded the release or run `main.pyw` if you cloned the repository.
