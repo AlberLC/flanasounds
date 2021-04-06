@@ -1,10 +1,12 @@
 # FlanaSounds
 An application to play sounds through the microphone, perfect for discord or any game with voice chat.
 
+
 ## Built with
 1. [Python](https://www.python.org/) - Programming Language.
 2. [PySide2](https://pypi.org/project/PySide2/) - The official Python module from the Qt for Python project, which provides access to the complete Qt 5.12+ framework.
 3. [keyboard](https://github.com/boppreh/keyboard) - Library to handle the keyboard.
+
 
 ## Installation
 ### Windows
