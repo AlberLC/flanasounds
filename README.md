@@ -73,6 +73,7 @@ keyboard library needs root on Linux.
     pip install -r requirements.txt
     ```
 
+
 ## Usage
 Run `FlanaSounds.exe` if you downloaded the release or run `main.pyw` if you cloned the repository.
 
