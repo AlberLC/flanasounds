@@ -139,7 +139,10 @@ class Controller:
             if output_info.deviceName() not in loaded_outputs_names:
                 self.outputs_info.append(output_info)
 
+        self.gui.combo_output.blockSignals(True)
+        self.gui.combo_output.clear()
         self.gui.combo_output.addItems(output.deviceName() for output in self.outputs_info)
+        self.gui.combo_output.blockSignals(False)
 
     def _load_talk_key_settings(self):
         self.talk_key = settings['talk_key']
@@ -214,8 +217,7 @@ class Controller:
                 self.stop()
             elif self.current_top_level_item is not None:
                 try:
-                    self.gui.tree_sounds.itemActivated.emit(self.current_top_level_item.child(int(event.name) - 1),
-                                                            0)
+                    self.gui.tree_sounds.itemActivated.emit(self.current_top_level_item.child(int(event.name) - 1), 0)
                 except ValueError:
                     return
         else:
@@ -380,3 +382,7 @@ class Controller:
             output.stop()
         for output in speakers_outputs:
             output.stop()
+
+    def update_outputs(self):
+        self._load_system_outputs()
+        self._load_output_settings()

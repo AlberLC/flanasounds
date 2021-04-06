@@ -190,16 +190,53 @@ QTreeView::branch:open:has-children:has-siblings  {
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="combo_output">
-            <property name="font">
-             <font>
-              <pointsize>11</pointsize>
-             </font>
+           <layout class="QHBoxLayout" name="horizontalLayout_7">
+            <property name="spacing">
+             <number>10</number>
             </property>
-            <property name="sizeAdjustPolicy">
-             <enum>QComboBox::AdjustToMinimumContentsLength</enum>
-            </property>
-           </widget>
+            <item>
+             <widget class="QComboBox" name="combo_output">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>11</pointsize>
+               </font>
+              </property>
+              <property name="sizeAdjustPolicy">
+               <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="button_update_outputs">
+              <property name="minimumSize">
+               <size>
+                <width>30</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>30</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>11</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
           <item>
            <widget class="QCheckBox" name="check_play_on_speakers">
@@ -516,7 +553,6 @@ QTreeView::branch:open:has-children:has-siblings  {
   <tabstop>tree_sounds</tabstop>
   <tabstop>line_folder</tabstop>
   <tabstop>button_folder</tabstop>
-  <tabstop>combo_output</tabstop>
   <tabstop>check_play_on_speakers</tabstop>
   <tabstop>line_talk_key</tabstop>
   <tabstop>slider_volume_selected</tabstop>

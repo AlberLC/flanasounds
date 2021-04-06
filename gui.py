@@ -23,6 +23,7 @@ class Gui(QtWidgets.QWidget):
     line_talk_key: QtWidgets.QLineEdit
 
     button_folder: QtWidgets.QPushButton
+    button_update_outputs: QtWidgets.QPushButton
     button_pause: QtWidgets.QPushButton
     button_stop: QtWidgets.QPushButton
 
@@ -52,6 +53,8 @@ class Gui(QtWidgets.QWidget):
 
         self.button_folder.setIconSize(QtCore.QSize(20, 20))
         self.button_folder.setIcon(QtGui.QIcon(resource_path(resources['url_folder'])))
+        self.button_update_outputs.setIconSize(QtCore.QSize(16, 16))
+        self.button_update_outputs.setIcon(QtGui.QIcon(resource_path(resources['url_update'])))
         self.button_pause.setIconSize(QtCore.QSize(20, 20))
         self.button_pause.setIcon(QtGui.QIcon(resource_path(resources['url_play'])))
         self.button_stop.setIconSize(QtCore.QSize(20, 20))
@@ -85,6 +88,7 @@ class Gui(QtWidgets.QWidget):
 
     def connect_signals(self, controller: 'controller.Controller'):
         self.button_folder.clicked.connect(controller.open_explorer)
+        self.button_update_outputs.clicked.connect(controller.update_outputs)
         self.button_pause.clicked.connect(controller.play_pause)
         self.button_stop.clicked.connect(controller.stop)
 
