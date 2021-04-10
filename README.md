@@ -6,6 +6,8 @@ An application to play sounds through the microphone, perfect for discord or any
 1. [Python](https://www.python.org/) - Programming Language.
 2. [PySide2](https://pypi.org/project/PySide2/) - The official Python module from the Qt for Python project, which provides access to the complete Qt 5.12+ framework.
 3. [keyboard](https://github.com/boppreh/keyboard) - Library to handle the keyboard.
+4. [Pydub](https://github.com/jiaaro/pydub) - Manipulate audio with an simple and easy high level interface.
+5. [FFmpeg](https://ffmpeg.org/) - A complete, cross-platform solution to record, convert and stream audio and video.
 
 
 ## Installation
@@ -45,6 +47,8 @@ Download the release and unzip it:
 
 ![download release](https://user-images.githubusercontent.com/37489786/113772784-735d2380-9725-11eb-8809-a65aee792c35.png)
 
+The ffmpeg binaries included in the release are under the lgpl license. See https://ffmpeg.org/legal.html for more information.
+
 
 <ins>b) Clone the repository:</ins>
 1. Install Python.
@@ -56,6 +60,7 @@ Download the release and unzip it:
     ```
     pip install -r requirements.txt
     ```
+4. Install FFmpeg (https://ffmpeg.org/).
 
 
 ### Linux
@@ -72,6 +77,7 @@ keyboard library needs root on Linux.
     ```
     pip install -r requirements.txt
     ```
+ 4. Install FFmpeg (https://ffmpeg.org/).
 
 
 ## Usage
