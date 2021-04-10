@@ -8,10 +8,11 @@ import subprocess
 import sys
 import wave
 from collections import namedtuple
+from pathlib import Path
 from tempfile import TemporaryFile, NamedTemporaryFile
 
 from .logging_utils import log_conversion, log_subprocess_output
-from .utils import mediainfo_json, fsdecode
+from .utils import mediainfo_json, fsdecode, get_encoder_name
 
 try:
     from StringIO import StringIO
@@ -167,7 +168,9 @@ class AudioSegment(object):
         first_second = a[:1000] # get the first second of an mp3
         slice = a[5000:10000] # get a slice from 5 to 10 seconds of an mp3
     """
-    converter = './ffmpeg/bin/ffmpeg.exe'  # flanagan get_encoder_name()  # either ffmpeg or avconv
+
+    # flanagan # either ffmpeg or avconv
+    converter = './ffmpeg/bin/ffmpeg.exe' if Path('ffmpeg').is_dir() else get_encoder_name()
 
     # TODO: remove in 1.0 release
     # maintain backwards compatibility for ffmpeg attr (now called converter)

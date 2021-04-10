@@ -7,6 +7,7 @@ import subprocess
 import sys
 from functools import wraps
 from math import log, ceil
+from pathlib import Path
 from subprocess import Popen, PIPE
 from tempfile import TemporaryFile
 from warnings import warn
@@ -256,7 +257,8 @@ def get_extra_info(stderr):
 def mediainfo_json(filepath, read_ahead_limit=-1):
     """Return json dictionary with media info(codec, duration, size, bitrate...) from filepath
     """
-    prober = './ffmpeg/bin/ffprobe.exe'  # flanagan get_prober_name()
+    prober = './ffmpeg/bin/ffprobe.exe' if Path('ffmpeg').is_dir() else get_prober_name()  # flanagan
+
     command_args = [
         "-v", "info",
         "-show_format",
