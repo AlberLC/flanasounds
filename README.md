@@ -99,7 +99,7 @@ We can choose the key to speak. FlanaSounds will automatically press this key be
 ![keys to talk](https://user-images.githubusercontent.com/37489786/113772994-b4553800-9725-11eb-90ec-dc7a249c7fdb.gif)
 
 
-Once you have everything ready you can use FlanaSounds. Choose each category by clicking with the mouse or by pressing the normal numeric keys (above qwerty...) and play each sound, within a selected category, with the mouse or by pressing the numeric keys of the numpad.
+Once you have everything ready you can use FlanaSounds. Choose each category by clicking with the mouse or by pressing the normal numeric keys (above qwerty...) and play each sound, within a selected category, with the mouse or by pressing the numeric keys of the numpad. If you want to prevent FlanaSounds from playing sounds you can deselect all categories by pressing `escape` key.
 
 When a sound is playing, you can pause/resume it by clicking the button below or pressing the `0` key on the numpad.
 
