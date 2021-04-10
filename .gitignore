@@ -162,3 +162,6 @@ ffmpeg
 
 # Config
 *.ini
+
+# Readme images
+readme_files
