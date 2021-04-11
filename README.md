@@ -52,32 +52,34 @@ The ffmpeg binaries included in the release are under the lgpl license. See http
 
 <ins>b) Clone the repository:</ins>
 1. Install Python.
-2. Clone the repository.
+2. Install [Git LFS extension](https://git-lfs.github.com/).
+3. Clone the repository.
     ```
     git clone https://github.com/AlberLC/flanasounds.git
     ```
-3. Install the pip packages.
+4. Install the pip packages.
     ```
     pip install -r requirements.txt
     ```
-4. Install FFmpeg (https://ffmpeg.org/).
+5. Install [FFmpeg](https://ffmpeg.org/).
 
 
 ### Linux
 keyboard library needs root on Linux.
 
 1. Install Python.
-2. Clone the repository.
+2. Install [Git LFS extension](https://git-lfs.github.com/).
+3. Clone the repository.
     ```
     git clone https://github.com/AlberLC/flanasounds.git
     ```
-3. Install the pip packages.
+4. Install the pip packages.
    
     You might prefer to install keyboard separately via root so you don't have to run the program as root every time.    
     ```
     pip install -r requirements.txt
     ```
- 4. Install FFmpeg (https://ffmpeg.org/).
+ 5. Install [FFmpeg](https://ffmpeg.org/).
 
 
 ## Usage
